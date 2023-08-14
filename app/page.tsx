@@ -48,7 +48,7 @@ function ModelSelector({ onSelectModel }) {
 
   // 6. Return JSX for ModelSelector component
   return (
-    <div className="absolute left-0 top-0">
+    <div className="absolute top-0 left-0">
       <div className="fixed z-10 left-3 top-3 right-3 grid gap-3 grid-cols-[auto_1fr_auto] font-semibold ">
         <button
           type="button"
@@ -72,8 +72,8 @@ function ModelSelector({ onSelectModel }) {
 function WelcomeBack() {
   return (
     <>
-      <h1 className="text-center tracking-tighter mt-8 mb-8 sm:mb-12 text-5xl">
-        Welcome back <span className="animate-pulse">🦜</span>
+      <h1 className="mt-8 mb-8 text-5xl tracking-tighter text-center sm:mb-12">
+      <span className="font-bold">TOBY</span><span className="animate-pulse">mark III</span>
       </h1>
     </>
   );
@@ -240,7 +240,7 @@ export default function App() {
                     {/* 29. User message display */}
                     <div className="flex justify-end">
                       <div className="flex items-end col-start-3 pb-1 mx-2 opacity-100 transform-none">
-                        <div className="rounded-xl px-3 py-2 break-words text-stone-900 transition-all bg-white place-self-end ">
+                        <div className="px-3 py-2 break-words transition-all bg-white rounded-xl text-stone-900 place-self-end ">
                           <div className="contents">
                             <p className="whitespace-pre-wrap">{m.content}</p>
                           </div>
@@ -264,7 +264,7 @@ export default function App() {
                       >
                         🦜
                       </div>
-                      <div className="col-start-2 grid gap-2 opacity-100 transform-none">
+                      <div className="grid col-start-2 gap-2 opacity-100 transform-none">
                         {/* 32. Assistant message content */}
                         <div
                           className={`ReactMarkdown rounded-xl px-3 py-2 break-words text-stone-900 transition-all pb-1 grid gap-3 grid-cols-1 max-w-[75ch] bg-white place-self-start`}
@@ -280,7 +280,7 @@ export default function App() {
               </div>
             ))
           : null}
-        <div className="bg-white rounded-md py-2 px-2 m-3">
+        <div className="px-2 py-2 m-3 bg-white rounded-md">
           <fieldset className="sm:sticky sm:z-10 grid sm:pr-3 sm:grid-flow-col sm:grid-cols-[minmax(0,_1fr)_aufto] sm:gap-2 w-full rounded-3xl top-4 backdrop-blur-xl bg-white disabled:bg-white/50">
             <form
               onSubmit={(e) => {
@@ -297,7 +297,7 @@ export default function App() {
               }}
             >
               {showSlideUp && (
-                <div className="bg-white rounded-md py-2">
+                <div className="py-2 bg-white rounded-md">
                   {functions.map((icon, index) => (
                     <label
                       key={index}
@@ -324,7 +324,7 @@ export default function App() {
                           <Circle size={32} />
                         )}
                       </span>
-                      <span className="text-black my-2">{icon.label}</span>
+                      <span className="my-2 text-black">{icon.label}</span>
                     </label>
                   ))}
                 </div>
@@ -357,7 +357,7 @@ export default function App() {
               />
             </form>
             {/* 36. Function and attachment buttons */}
-            <div className="flex justify-end absolute right-0 top-0 bottom-0">
+            <div className="absolute top-0 bottom-0 right-0 flex justify-end">
               {selectedModel === "gpt-3.5" ? (
                 <label>
                   <div onClick={() => setShowSlideUp(!showSlideUp)}>
@@ -381,7 +381,7 @@ export default function App() {
                   {/* 38. Input for attaching files */}
                   <input
                     type="file"
-                    className="opacity-0 absolute inset-0 rounded-xl -z-10 overflow-hidden"
+                    className="absolute inset-0 overflow-hidden opacity-0 rounded-xl -z-10"
                     accept=".txt"
                     onChange={handleFileChange}
                     multiple
@@ -391,9 +391,9 @@ export default function App() {
               </label>
               {/* 39. Start new chat button */}
               <div>
-                <button className="w-full flex items-center bg-purple-800 text-white py-2 px-2 rounded-full cursor-pointer shadow transition-all ease-in-out active:scale-[0.98] text-ellipsis whitespace-nowrap overflow-x-hidden text-sm">
+                <button className="w-full flex items-center bg-rose-700 text-white py-2 px-2 rounded-full cursor-pointer shadow transition-all ease-in-out active:scale-[0.98] text-ellipsis whitespace-nowrap overflow-x-hidden text-sm">
                   {showWelcomeBack ? "Start a new Chat" : ""}
-                  <div className="grid place-items-center w-5 h-5">
+                  <div className="grid w-5 h-5 place-items-center">
                     <ArrowFatRight size={18} />
                   </div>
                 </button>
@@ -414,14 +414,14 @@ export default function App() {
               {files.map((file, index) => (
                 <div
                   key={index}
-                  className="mt-4 w-40 relative cursor-pointer rounded-md flex shadow text-xs bg-white shadow"
+                  className="relative flex w-40 mt-4 text-xs bg-white rounded-md shadow cursor-pointer"
                 >
-                  <button className="absolute inset-0 cursor-pointer hover:bg-black/5 w-40"></button>
+                  <button className="absolute inset-0 w-40 cursor-pointer hover:bg-black/5"></button>
                   {/* 42. Display file type badge */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-purple-800 rounded-tl-md rounded-bl-md grid place-items-center text-white font-medium uppercase truncate">
+                  <div className="grid flex-shrink-0 w-12 h-12 font-medium text-white uppercase truncate bg-purple-800 rounded-tl-md rounded-bl-md place-items-center">
                     {file.title.split(".")[1].toUpperCase()}
                   </div>
-                  <div className="py-2 px-3 min-w-0">
+                  <div className="min-w-0 px-3 py-2">
                     <p className="truncate" title={file.name}>
                       {/* 43. Display file title */}
                       {file.title}
@@ -433,7 +433,7 @@ export default function App() {
                     </div>
                     {/* 45. Remove attached file button */}
                     <div
-                      className="absolute top-0 right-0 bg-white shadow rounded-full cursor-pointer hover:bg-stone-100 translate-x-2 -translate-y-2 z-10"
+                      className="absolute top-0 right-0 z-10 translate-x-2 -translate-y-2 bg-white rounded-full shadow cursor-pointer hover:bg-stone-100"
                       onClick={() => removeFile(index)}
                     >
                       <XCircle size={20} />
@@ -445,7 +445,7 @@ export default function App() {
           </div>
         </div>
         <div
-          className="flex justify-end text-xs text-stone-400 delay-100 duration-500 transition-opacity mx-4"
+          className="flex justify-end mx-4 text-xs transition-opacity duration-500 delay-100 text-stone-400"
           style={{ visibility: isInputFocused ? "visible" : "hidden" }}
         >
           {/* 46. Keyboard shortcuts info */}
