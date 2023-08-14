@@ -6,6 +6,7 @@ import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import { createClient } from "@supabase/supabase-js";
 import { StreamingTextResponse, AnthropicStream } from 'ai';
+import axios from 'axios';
 import * as z from 'zod';
 
 
@@ -129,21 +130,31 @@ export async function POST(req: Request, res: Response) {
     //   }
     // });
 
-    // 13. Define a dynamic structured tool for fetching crypto price
+    // 13. Define a dynamic structured tool for Destination Guides
+
+
     const fetchDestinationGuide = new DynamicStructuredTool({
       name: 'fetchDestinationGuide',
       description: 'Fetches and returns a destination guide for a specified city',
       schema: z.object({
         cityISO: z.string(),
       }),
-      func: async (options: { cityISO: string }): Promise<string> => {
+      func: async (options: { cityISO: string }): Promise<any> => {
         const { cityISO } = options;
-        const url = `https://api.arrivalguides.com/api/xml/Travelguide?auth=7441604e8621acef46dc91746f25041f3b79d7b2&lang=en&iso=${cityISO}&v=13`;
-        const response = await fetch(url);
-        const data = await response.json();
-        const guide = JSON.stringify(data.data.destination.description)
-        return guide;
-        // return data[cryptoName.toLowerCase()][vsCurrency!.toLowerCase()].toString();
+
+
+        axios.request({
+          method: 'get',
+          maxBodyLength: Infinity,
+          url: `https://api.arrivalguides.com/api/xml/Travelguide?auth=7441604e8621acef46dc91746f25041f3b79d7b2&lang=en&iso=${cityISO}&v=13`,
+        }
+        )
+        .then((response) => {
+          return(JSON.stringify(response.data.destination.description));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
       },
     });
 
