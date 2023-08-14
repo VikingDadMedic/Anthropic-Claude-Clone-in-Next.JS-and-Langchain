@@ -21,6 +21,22 @@ interface FunctionInfo {
   active: boolean;
 }
 
+function buildPrompt(
+  messages: { content: string; role: 'system' | 'user' | 'assistant' }[]
+) {
+  return (
+    messages
+      .map(({ content, role }) => {
+        if (role === 'user') {
+          return `Human: ${content}`
+        } else {
+          return `Assistant: ${content}`
+        }
+      })
+      .join('\n\n') + 'Assistant:'
+  )
+}
+
 // 3. Set up environment variables
 const privateKey: string = process.env.SUPABASE_PRIVATE_KEY!;
 const url: string = process.env.SUPABASE_URL!;
@@ -35,45 +51,30 @@ export async function POST(req: Request, res: Response) {
   // 6. Handle the 'claude-2-100k' model case
   if (selectedModel === 'claude-2') {
     // 7. Generate an example response for the Claude model
-    const response = await fetch('https://api.anthropic.com/v1/complete', {
+    const result = await fetch('https://api.anthropic.com/v1/complete', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': process.env.ANTHROPIC_API_KEY
       },
       body: JSON.stringify({
-        prompt: messages,
+        prompt: buildPrompt(messages),
         model: 'claude-v1',
-        max_tokens_to_sample: 1000,
-        temperature: 1,
+        max_tokens_to_sample: 300,
+        temperature: 0.9,
         stream: true
       })
     })
-      // Check for errors
-  if (!response.ok) {
-    return new Response(await response.text(), {
-      status: response.status
-    })
-  }
- 
-  // Convert the response into a friendly text-stream
-  const responseStream = AnthropicStream(response)
- 
-  // Respond with the stream
-  return new StreamingTextResponse(responseStream)
-
+   
+    // Check for errors
+    if (!result.ok) {
+      return new Response(await result.text(), {
+        status: result.status
+      })
+    }
+    const stream = AnthropicStream(result)
     // const chunks: string[] = result.split(" ");
-    // const responseStream = new ReadableStream({
-    //   async start(controller) {
-    //     for (const chunk of chunks) {
-    //       const bytes = new TextEncoder().encode(chunk + " ");
-    //       controller.enqueue(bytes);
-    //       await new Promise((r) => setTimeout(r, Math.floor(Math.random() * 20 + 10)));
-    //     }
-    //     controller.close();
-    //   },
-    // });
-    // return new StreamingTextResponse(responseStream);
+    const responseStream = new StreamingTextResponse(stream);
   } else {
     // 8. Process the input data
     const latestMessage: string = messages[messages.length - 1].content;
@@ -131,7 +132,7 @@ export async function POST(req: Request, res: Response) {
     // 13. Define a dynamic structured tool for fetching crypto price
     const fetchDestinationGuide = new DynamicStructuredTool({
       name: 'fetchDestinationGuide',
-      description: 'Fetches a destination guide for a specified city',
+      description: 'Fetches and returns a destination guide for a specified city',
       schema: z.object({
         cityISO: z.string(),
       }),
@@ -140,7 +141,7 @@ export async function POST(req: Request, res: Response) {
         const url = `https://api.arrivalguides.com/api/xml/Travelguide?auth=7441604e8621acef46dc91746f25041f3b79d7b2&lang=en&iso=${cityISO}&v=13`;
         const response = await fetch(url);
         const data = await response.json();
-        const guide = data.destination.description[0];
+        const guide = JSON.stringify(data.data.destination.description)
         return guide;
         // return data[cryptoName.toLowerCase()][vsCurrency!.toLowerCase()].toString();
       },
