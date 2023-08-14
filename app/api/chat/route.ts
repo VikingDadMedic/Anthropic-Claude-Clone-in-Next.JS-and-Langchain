@@ -8,6 +8,9 @@ import { createClient } from "@supabase/supabase-js";
 import { StreamingTextResponse, AnthropicStream } from 'ai';
 import * as z from 'zod';
 
+
+export const runtime = 'edge';
+
 // 2. Define interfaces
 interface File {
   base64: string;
@@ -96,7 +99,7 @@ export async function POST(req: Request, res: Response) {
         }
       );
       // 10. Perform similarity search using vector store
-      const vectorResultsArr = await vectorStore.similaritySearch(latestMessage, 3);
+      const vectorResultsArr = await vectorStore.similaritySearch(latestMessage, 1);
       const vectorResultsStr: string = vectorResultsArr.map((result) => result.pageContent).join('\n');
       argForExecutor = `USER QUERY: ${latestMessage} --- Before using prior knowledge base, use the following from new info: ${vectorResultsStr}`;
     }
