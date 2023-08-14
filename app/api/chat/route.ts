@@ -1,6 +1,6 @@
 // 1. Import dependencies
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
-import { DynamicTool, DynamicStructuredTool, WikipediaQueryRun } from "langchain/tools";
+import { DynamicTool, DynamicStructuredTool, WikipediaQueryRun, SerpAPI } from "langchain/tools";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
@@ -81,6 +81,12 @@ export async function POST(req: Request, res: Response) {
       topKResults: 1,
       maxDocContentLength: 300,
     });
+    // 11.5 Set up agent executor with tools and model
+    const serpApiQuery = new SerpAPI(process.env.SERPAPI_API_KEY, {
+      location: "Tallahasse,Florida,United States",
+      hl: "en",
+      gl: "us",
+    });
 
     // 12. Define a dynamic tool for returning the value of foo
     const foo = new DynamicTool({
@@ -110,7 +116,7 @@ export async function POST(req: Request, res: Response) {
 
     // 14. Define available functions and tools
     const availableFunctions: Record<string, DynamicTool | DynamicStructuredTool> = {
-      wikipediaQuery,
+      // wikipediaQuery,
       fetchCryptoPrice,
       foo
     };
