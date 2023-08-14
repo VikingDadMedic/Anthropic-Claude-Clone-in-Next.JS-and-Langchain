@@ -191,7 +191,7 @@ export default function App() {
   // 24. Handle file change event
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files).slice(0, 5);
-    const filePromises = selectedFiles.map((file) => {
+    const filePromises = selectedFiles.map((file: any) => {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -199,9 +199,9 @@ export default function App() {
           if (base64File) {
             resolve({
               base64: base64File,
-              title: file.name,
-              filetype: file.type,
-              size: file.size,
+              title: (file as File).name,
+              filetype: (file as File).type,
+              size: (file as File).size,
             });
           }
         };
@@ -339,7 +339,7 @@ export default function App() {
                 onChange={handleInputChange}
                 name="message"
                 autoComplete="off"
-                onKeyDown={(e) => {
+                onKeyDown={(e:any) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault(); // Prevent new line
                     handleSubmit(e, {

@@ -89,13 +89,13 @@ export async function POST(req: Request, res: Response) {
     });
 
     // 12. Define a dynamic tool for returning the value of foo
-    const foo = new DynamicTool({
-      name: 'foo',
-      description: 'Returns the value of foo',
-      func: async (): Promise<string> => {
-        return 'The value of foo is "this is a langchain, next.js, supabase, claude, openai and AI demo"';
-      }
-    });
+    // const foo = new DynamicTool({
+    //   name: 'foo',
+    //   description: 'Returns the value of foo',
+    //   func: async (): Promise<string> => {
+    //     return 'The value of foo is "this is a langchain, next.js, supabase, claude, openai and AI demo"';
+    //   }
+    // });
 
     // 13. Define a dynamic structured tool for fetching crypto price
     const fetchCryptoPrice = new DynamicStructuredTool({
@@ -115,12 +115,13 @@ export async function POST(req: Request, res: Response) {
     });
 
     // 14. Define available functions and tools
-    const availableFunctions: Record<string, DynamicTool | DynamicStructuredTool> = {
-      // wikipediaQuery,
-      fetchCryptoPrice,
-      foo
+    const availableFunctions: Record<string, any | DynamicStructuredTool> = {
+      wikipediaQuery,
+      serpApiQuery,
+      // fetchCryptoPrice,
+      // foo
     };
-    const tools: Array<DynamicTool | DynamicStructuredTool> = [foo];
+    const tools: Array<any | DynamicStructuredTool> = [wikipediaQuery, serpApiQuery];
     if (functions) {
       functions.forEach((func: FunctionInfo) => {
         if (func.active) {
