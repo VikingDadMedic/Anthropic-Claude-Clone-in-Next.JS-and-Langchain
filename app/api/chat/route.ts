@@ -109,9 +109,11 @@ export async function POST(req: Request, res: Response) {
     });
     // 11.5 Set up agent executor with tools and model
     const serpApiQuery = new SerpAPI(process.env.SERPAPI_API_KEY, {
-      location: "Tallahasse,Florida,United States",
-      hl: "en",
+      location: "United States",
       gl: "us",
+      hl: "en",
+      safe: "active",
+      nfpr: "1"
     });
 
     // 12. Define a dynamic tool for returning the value of foo
