@@ -5,7 +5,7 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import { createClient } from "@supabase/supabase-js";
-import { StreamingTextResponse } from 'ai';
+import { StreamingTextResponse, AnthropicStream } from 'ai';
 import * as z from 'zod';
 
 // 2. Define interfaces
@@ -32,19 +32,45 @@ export async function POST(req: Request, res: Response) {
   // 6. Handle the 'claude-2-100k' model case
   if (selectedModel === 'claude-2') {
     // 7. Generate an example response for the Claude model
-    const result = "This is an example response from the Claude model."
-    const chunks: string[] = result.split(" ");
-    const responseStream = new ReadableStream({
-      async start(controller) {
-        for (const chunk of chunks) {
-          const bytes = new TextEncoder().encode(chunk + " ");
-          controller.enqueue(bytes);
-          await new Promise((r) => setTimeout(r, Math.floor(Math.random() * 20 + 10)));
-        }
-        controller.close();
+    const response = await fetch('https://api.anthropic.com/v1/complete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY
       },
-    });
-    return new StreamingTextResponse(responseStream);
+      body: JSON.stringify({
+        prompt: messages,
+        model: 'claude-v1',
+        max_tokens_to_sample: 1000,
+        temperature: 1,
+        stream: true
+      })
+    })
+      // Check for errors
+  if (!response.ok) {
+    return new Response(await response.text(), {
+      status: response.status
+    })
+  }
+ 
+  // Convert the response into a friendly text-stream
+  const responseStream = AnthropicStream(response)
+ 
+  // Respond with the stream
+  return new StreamingTextResponse(responseStream)
+
+    // const chunks: string[] = result.split(" ");
+    // const responseStream = new ReadableStream({
+    //   async start(controller) {
+    //     for (const chunk of chunks) {
+    //       const bytes = new TextEncoder().encode(chunk + " ");
+    //       controller.enqueue(bytes);
+    //       await new Promise((r) => setTimeout(r, Math.floor(Math.random() * 20 + 10)));
+    //     }
+    //     controller.close();
+    //   },
+    // });
+    // return new StreamingTextResponse(responseStream);
   } else {
     // 8. Process the input data
     const latestMessage: string = messages[messages.length - 1].content;
@@ -79,7 +105,7 @@ export async function POST(req: Request, res: Response) {
     const model = new ChatOpenAI({ temperature: 0, streaming: true });
     const wikipediaQuery = new WikipediaQueryRun({
       topKResults: 1,
-      maxDocContentLength: 300,
+      maxDocContentLength: 1000,
     });
     // 11.5 Set up agent executor with tools and model
     const serpApiQuery = new SerpAPI(process.env.SERPAPI_API_KEY, {
