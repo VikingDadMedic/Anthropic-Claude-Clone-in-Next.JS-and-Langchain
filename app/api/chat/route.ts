@@ -30,7 +30,7 @@ export async function POST(req: Request, res: Response) {
   const { messages, functions, files, selectedModel, selectedVectorStorage } = await req.json();
 
   // 6. Handle the 'claude-2-100k' model case
-  if (selectedModel === 'claude-2-100k') {
+  if (selectedModel === 'claude-2') {
     // 7. Generate an example response for the Claude model
     const result = "This is an example response from the Claude model."
     const chunks: string[] = result.split(" ");
@@ -98,19 +98,20 @@ export async function POST(req: Request, res: Response) {
     // });
 
     // 13. Define a dynamic structured tool for fetching crypto price
-    const fetchCryptoPrice = new DynamicStructuredTool({
-      name: 'fetchCryptoPrice',
-      description: 'Fetches the current price of a specified cryptocurrency',
+    const fetchDestinationGuide = new DynamicStructuredTool({
+      name: 'fetchDestinationGuide',
+      description: 'Fetches a destination guide for a specified city',
       schema: z.object({
-        cryptoName: z.string(),
-        vsCurrency: z.string().optional().default('USD'),
+        cityISO: z.string(),
       }),
-      func: async (options: { cryptoName: string; vsCurrency?: string; }): Promise<string> => {
-        const { cryptoName, vsCurrency } = options;
-        const url = `https://api.coingecko.com/api/v3/simple/price?ids=${cryptoName}&vs_currencies=${vsCurrency}`;
+      func: async (options: { cityISO: string }): Promise<string> => {
+        const { cityISO } = options;
+        const url = `https://api.arrivalguides.com/api/xml/Travelguide?auth=7441604e8621acef46dc91746f25041f3b79d7b2&lang=en&iso=${cityISO}&v=13`;
         const response = await fetch(url);
         const data = await response.json();
-        return data[cryptoName.toLowerCase()][vsCurrency!.toLowerCase()].toString();
+        const guide = data.destination.description[0];
+        return guide;
+        // return data[cryptoName.toLowerCase()][vsCurrency!.toLowerCase()].toString();
       },
     });
 
@@ -118,7 +119,7 @@ export async function POST(req: Request, res: Response) {
     const availableFunctions: Record<string, any | DynamicStructuredTool> = {
       wikipediaQuery,
       serpApiQuery,
-      // fetchCryptoPrice,
+      fetchDestinationGuide,
       // foo
     };
     const tools: Array<any | DynamicStructuredTool> = [wikipediaQuery, serpApiQuery];

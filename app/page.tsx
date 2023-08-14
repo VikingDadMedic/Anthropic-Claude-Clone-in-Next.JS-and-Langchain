@@ -10,6 +10,7 @@ import {
   XCircle,
   Circle,
   CheckCircle,
+  Robot,
   User,
 } from "@phosphor-icons/react";
 
@@ -17,7 +18,7 @@ import {
 function ModelSelector({ onSelectModel }) {
   // 3. Initialize state for the currentModel
   const [currentModel, setCurrentModel] = useState({
-    model: "claude-2-100k",
+    model: "claude-2",
     src: "anthropic-logo.png",
     alt: "Anthropic Logo",
   });
@@ -25,7 +26,7 @@ function ModelSelector({ onSelectModel }) {
   // 4. Define modelSelection array
   const modelSelection = [
     {
-      model: "claude-2-100k",
+      model: "claude-2",
       src: "anthropic-logo.png",
       alt: "Anthropic Logo",
     },
@@ -134,7 +135,8 @@ export default function App() {
     useState("Supabase");
   const [functions, setFunctions] = useState([
     { name: "wikipediaQuery", active: false, label: "Wikipedia Search" },
-    { name: "fetchCryptoPrice", active: false, label: "Crypto Price" },
+    { name: "serpApiQuery", active: false, label: "Web Search" },
+    { name: "fetchDestinationGuide", active: false, label: "Destination Guides" },
   ]);
 
   // 15. Define chat related hooks using useChat()
@@ -258,12 +260,15 @@ export default function App() {
                   <>
                     {/* 31. Assistant message display */}
                     <div className="flex justify-start my-2">
-                      <div
+                    <div className="font-bold rounded-full flex items-center justify-center h-8 w-8 text-[14px] bg-ant-primary text-white bg-purple-800">
+                          <Robot size={18} />
+                        </div>
+                      {/* <div
                         className="font-bold rounded-full flex items-center justify-center mx-2 h-8 w-8 text-[14px] bg-white text-whitemx-2 
                     mt-0.5"
                       >
                         🦜
-                      </div>
+                      </div> */}
                       <div className="grid col-start-2 gap-2 opacity-100 transform-none">
                         {/* 32. Assistant message content */}
                         <div
